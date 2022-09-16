@@ -19,6 +19,10 @@ service / on new http:Listener(9090) {
 }
 
 function developedFunction(int option) returns string|error {
+    if option == 1 {
+        return "success response";
+    }
+    
     if option == 2 {
         return error CustomErr("STATUS_UNAUTHORIZED - original error!", externalMsg = "STATUS_UNAUTHORIZED!",
             code = http:STATUS_UNAUTHORIZED);
