@@ -8,9 +8,10 @@ service class ResponseErrorInterceptor {
                     returns http:InternalServerError|http:Unauthorized|http:BadRequest {
 
         //error logs 
-        // log:printError("ResponseErrorInterceptor");
+        // TODO - If there is a database logging function, try here 
 
-        //email alert - TODO
+        //email alert 
+        // TODO - If there is a email alert function, try here
 
         //Return
         string message = "General error";
