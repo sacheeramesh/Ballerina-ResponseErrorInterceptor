@@ -23,7 +23,13 @@ function developedFunction(int option) returns string|error {
         return "success response";
     }
 
-    return error("error response");
+    if option == 2 {
+        return error CustomErr("Invalid option provided!", externalMsg = "Invalid option provided!",
+            code = http:STATUS_UNAUTHORIZED);
+    }
+
+    return error CustomErr("Internal server error - original error!", externalMsg = "Internal server error!",
+            code = http:STATUS_UNAUTHORIZED);
 
 }
 
