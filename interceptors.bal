@@ -1,31 +1,14 @@
 import ballerina/http;
-import ballerina/log;
 
-// import ballerina/log;
-
-// # For error 
-// service class ResponseErrorInterceptor {
-//     *http:ResponseErrorInterceptor;
-
-//     remote function interceptResponseError(http:RequestContext ctx, http:Response res, error err)
-//                     returns http:NextService|error? {
-
-//         //email alert - TODO
-
-//         //Return
-//         return err;
-//     }
-// }
-
-# for custom error
+# For custom error
 service class ResponseErrorInterceptor {
     *http:ResponseErrorInterceptor;
 
-    remote function interceptResponseError(http:RequestContext ctx, http:Response res, error err)
-                    returns http:NextService|http:InternalServerError|http:Unauthorized {
+    remote function interceptResponseError(error err)
+                    returns http:InternalServerError|http:Unauthorized|http:BadRequest {
 
         //error logs 
-        log:printError("ResponseErrorInterceptor");
+        // log:printError("ResponseErrorInterceptor");
 
         //email alert - TODO
 
@@ -34,18 +17,19 @@ service class ResponseErrorInterceptor {
         if err is CustomErr {
             CustomErrDetail detail = err.detail();
             message = detail.externalMsg;
-
-            if detail.code == http:STATUS_INTERNAL_SERVER_ERROR {
-                http:InternalServerError e = {body: {message}};
-                return e;
-            }
-            if detail.code == http:STATUS_UNAUTHORIZED {
-                http:Unauthorized e = {body: {message}};
-                return e;
+            match detail.code {
+                http:STATUS_INTERNAL_SERVER_ERROR => {
+                    return <http:InternalServerError>{body: {message}};
+                }
+                http:STATUS_UNAUTHORIZED => {
+                    return <http:Unauthorized>{body: {message}};
+                }
+                http:STATUS_BAD_REQUEST => {
+                    return <http:BadRequest>{body: {message}};
+                }
             }
         }
 
-        http:InternalServerError e = {body: {message}};
-        return e;
+        return <http:InternalServerError> {body: {message}};
     }
 }
